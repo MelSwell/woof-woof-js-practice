@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const dogBar = document.querySelector("#dog-bar")
 
   fetchAllDogs()
 
   const filterButton = document.getElementById("good-dog-filter")
   filterButton.addEventListener("click", event => {
-    const dogBar = document.getElementById("dog-bar")
     dogBar.innerHTML = ""
     if (event.target.textContent === "Filter good dogs: OFF") {
       event.target.textContent = "Filter good dogs: ON"
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
   
-  const dogBar = document.querySelector("#dog-bar")
   dogBar.addEventListener("click", event => {
     if (event.target.tagName === 'SPAN') {
       fetch(`http://localhost:3000/pups/${event.target.dataset.id}`)
@@ -27,14 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
 })
 
-const renderDogNameInDogBar = dogObject => {
-  const dogNameSpan = document.createElement("span")
-  dogNameSpan.textContent = `${dogObject.name}`
-  dogNameSpan.dataset.id = `${dogObject.id}`
-  
-  const dogBar = document.querySelector("#dog-bar")
-  dogBar.append(dogNameSpan)
-}
 
 const renderClickedDog = dogObject => {
   const dogInfo = document.querySelector("#dog-info")
@@ -80,15 +71,31 @@ const toggleGoodOrBad = event => {
     } else {
       alert(`${dogObject.name} is starting to develop some bad behavior...`)
     }
-  
+    
     renderClickedDog(dogObject)
   })
 }
 
+const renderDogNameInDogBar = dogObject => {
+  const dogNameSpan = document.createElement("span")
+  dogNameSpan.textContent = `${dogObject.name}`
+  dogNameSpan.dataset.id = `${dogObject.id}`
+  
+  const dogBar = document.querySelector("#dog-bar")
+  dogBar.append(dogNameSpan)
+}
+
+const fetchAllDogs = () => {
+  fetch('http://localhost:3000/pups')
+  .then(resp => resp.json())
+  .then(arrOfDogObjects => arrOfDogObjects.forEach(dogObject => {
+    renderDogNameInDogBar(dogObject)
+  }))
+} 
+
 const filterGoodDogs = arrOfDogObjects => arrOfDogObjects.filter(dogObj => {
   return dogObj.isGoodDog
 })
-
 
 const fetchGoodDogs = () => {
   fetch('http://localhost:3000/pups')
@@ -98,11 +105,3 @@ const fetchGoodDogs = () => {
     goodDogs.forEach(dogObject => renderDogNameInDogBar(dogObject))
   })
 }
-
-const fetchAllDogs = () => {
-  fetch('http://localhost:3000/pups')
-  .then(resp => resp.json())
-  .then(arrOfDogObjects => arrOfDogObjects.forEach(dogObject => {
-    renderDogNameInDogBar(dogObject)
-  }))
-}  
